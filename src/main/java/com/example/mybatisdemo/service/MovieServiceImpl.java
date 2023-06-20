@@ -7,6 +7,7 @@ import com.example.mybatisdemo.exception.MovieNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,14 +27,23 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public MovieResponse getMovie(int id) {
-        return convertToResponse(movieMapper.findById(id));
+        Movie movie = movieMapper.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
+        return convertToResponse(movie);
     }
+
+
 
     @Override
     public List<MovieResponse> getMoviesByPublishedYear(int year) {
         List<Movie> movies = movieMapper.findByPublishedYear(year);
+        if (movies == null || movies.isEmpty()) {
+            throw new MovieNotFoundException("No movies were found for the year: " + year);
+        }
+
         return movies.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
+
 
 
     @Override

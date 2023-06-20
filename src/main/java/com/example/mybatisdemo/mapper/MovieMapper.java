@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.*;
 import  java.util.List;
+import java.util.Optional;
 
 import org.apache.ibatis.annotations.*;
 
@@ -17,10 +18,10 @@ public interface MovieMapper {
     List<Movie> findAll();
 
     @Select("SELECT * FROM movies WHERE id = #{id}")
-    Movie findById(int id);
+    Optional<Movie> findById(int id);
 
     @Select("SELECT * FROM movies WHERE year = #{year}")
-    List<Movie> findByPublishedYear(int year) throws MovieNotFoundException;
+    List<Movie> findByPublishedYear(int year);
 
 
     @Insert("INSERT INTO movies(name, director, year, rating, runtime) VALUES(#{name}, #{director}, #{year}, #{rating}, #{runtime})")

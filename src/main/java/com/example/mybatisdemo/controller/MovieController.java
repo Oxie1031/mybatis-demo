@@ -1,6 +1,7 @@
 package com.example.mybatisdemo.controller;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.exception.MovieNotFoundException;
 import com.example.mybatisdemo.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,4 +46,6 @@ public class MovieController {
     public void deleteMovie(@PathVariable int id) {
         movieService.deleteMovie(id);
     }
+
+
 }
