@@ -39,62 +39,22 @@ public class MovieController {
     public ResponseEntity<ApiResponse<MovieResponse>> addMovie(@RequestBody Movie movie) {
         MovieResponse addedMovieResponse = movieService.addMovie(movie);
 
-        ApiResponse<MovieResponse> response = new ApiResponse<>();
-        response.setStatus("success");
-        response.setMessage("Movie successfully added.");
-        response.setData(addedMovieResponse);
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully added.", addedMovieResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable int id, @RequestBody Movie movieUpdates) {
-//        MovieResponse existingMovie = movieService.patchMovie(id);
-//
-//        // Apply movie updates
-//        if (movieUpdates.getName() != null) {
-//            existingMovie.setName(movieUpdates.getName());
-//        }
-//        if (movieUpdates.getDirector() != null) {
-//            existingMovie.setDirector(movieUpdates.getDirector());
-//        }
-//        // Apply other updates...
-//
-//        movieService.updateMovie(id, existingMovie);
-//
-//        ApiResponse<MovieResponse> response = new ApiResponse<>();
-//        response.setStatus("success");
-//        response.setMessage("Movie successfully patched.");
-//        response.setData(existingMovie);
-//
-//        return ResponseEntity.ok(response);
-//    }
-
-
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable int id, @RequestBody Map<String, Object> updates) {
-        try {
-            Movie updatedMovie = movieService.patchMovie(id, updates);
+        Movie updatedMovie = movieService.patchMovie(id, updates);
 
-            MovieResponse updatedMovieResponse = new MovieResponse(updatedMovie.getId(),updatedMovie.getName(),updatedMovie.getDirector(),updatedMovie.getYear());
+        MovieResponse updatedMovieResponse = new MovieResponse(updatedMovie.getId(),updatedMovie.getName(),updatedMovie.getDirector(),updatedMovie.getYear());
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully updated.", updatedMovieResponse);
 
-            ApiResponse<MovieResponse> response = new ApiResponse<>();
-            response.setStatus("success");
-            response.setMessage("Movie successfully updated.");
-            response.setData(updatedMovieResponse);
-
-            return ResponseEntity.ok(response);
-
-        } catch (MovieNotFoundException e) {
-
-            ApiResponse<MovieResponse> response = new ApiResponse<>();
-            response.setStatus("failure");
-            response.setMessage("Movie with id " + id + " not found.");
-
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(response);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponse>> updateMovie(@PathVariable int id, @RequestBody Movie movie) {
@@ -102,10 +62,7 @@ public class MovieController {
 
         MovieResponse updatedMovieResponse = movieService.getMovie(id);
 
-        ApiResponse<MovieResponse> response = new ApiResponse<>();
-        response.setStatus("success");
-        response.setMessage("Movie successfully updated.");
-        response.setData(updatedMovieResponse);
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully updated.", updatedMovieResponse);
 
         return ResponseEntity.ok(response);
     }
@@ -115,11 +72,7 @@ public class MovieController {
         MovieResponse deletedMovieResponse = movieService.getMovie(id);
 
         movieService.deleteMovie(id);
-
-        ApiResponse<MovieResponse> response = new ApiResponse<>();
-        response.setStatus("success");
-        response.setMessage("Movie successfully deleted.");
-        response.setData(deletedMovieResponse);
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully deleted.",deletedMovieResponse);
 
         return ResponseEntity.ok(response);
     }
