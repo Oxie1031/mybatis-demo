@@ -18,11 +18,16 @@ public interface MovieMapper {
     List<Movie> findAll();
 
     @Select("SELECT * FROM movies WHERE id = #{id}")
-    Optional<Movie> findById(int id);
+    Optional<Movie> findOptionalById(int id);
+
+    @Select("SELECT * FROM movies WHERE id = #{id}")
+    Movie findById(int id);
+
+    @Select("SELECT id FROM movies ORDER BY id DESC LIMIT 1")
+    int getLatestMovieId();
 
     @Select("SELECT * FROM movies WHERE year = #{year}")
     List<Movie> findByPublishedYear(int year);
-
 
     @Insert("INSERT INTO movies(name, director, year, rating, runtime) VALUES(#{name}, #{director}, #{year}, #{rating}, #{runtime})")
     void insert(Movie movie);

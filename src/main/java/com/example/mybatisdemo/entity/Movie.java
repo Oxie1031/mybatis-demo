@@ -9,6 +9,9 @@ public class Movie {
     private double rating;
     private int runtime;
 
+    public  Movie() {
+
+    }
     public Movie(int id, String name, String director, int year, double rating, int runtime) {
         this.id = id;
         this.name = name;
