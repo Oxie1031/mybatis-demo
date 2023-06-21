@@ -39,9 +39,6 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public List<Movie> getMoviesByPublishedYear(int year) {
         List<Movie> movies = movieMapper.findByPublishedYear(year);
-        if (movies == null || movies.isEmpty()) {
-            throw new MovieNotFoundException("No movies were found for the year: " + year);
-        }
 
         return movies.stream().collect(Collectors.toList());
     }
