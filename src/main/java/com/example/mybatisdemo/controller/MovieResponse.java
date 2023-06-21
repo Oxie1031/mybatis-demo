@@ -1,7 +1,7 @@
 package com.example.mybatisdemo.controller;
 
 public class MovieResponse {
-    private int id;
+    private String id;
     private String name;
     private String director;
     private int year;
@@ -11,18 +11,18 @@ public class MovieResponse {
 
     }
 
-    public MovieResponse(int id, String name, String director, int year) {
+    public MovieResponse(String id, String name, String director, int year) {
         this.id = id;
         this.name = name;
         this.director = director;
         this.year = year;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

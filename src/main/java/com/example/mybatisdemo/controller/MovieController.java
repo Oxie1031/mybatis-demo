@@ -30,7 +30,7 @@ public class MovieController {
 
 
     @GetMapping("/{id}")
-    public MovieResponse getMovie(@PathVariable int id) {
+    public MovieResponse getMovie(@PathVariable String id) {
        return convertToResponse(movieService.getMovie(id));
     }
 
@@ -51,7 +51,7 @@ public class MovieController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable int id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable String id, @RequestBody Map<String, Object> updates) {
         ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully updated.", convertToResponse(movieService.patchMovie(id, updates)));
 
         return ResponseEntity.ok(response);
@@ -59,7 +59,7 @@ public class MovieController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> updateMovie(@PathVariable int id, @RequestBody Movie movie) {
+    public ResponseEntity<ApiResponse<MovieResponse>> updateMovie(@PathVariable String id, @RequestBody Movie movie) {
 
         ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully updated.", convertToResponse(movieService.updateMovie(id, movie)));
 
@@ -67,7 +67,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> deleteMovie(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<MovieResponse>> deleteMovie(@PathVariable String id) {
 
         ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully deleted.",convertToResponse(movieService.deleteMovie(id)));
         return ResponseEntity.ok(response);

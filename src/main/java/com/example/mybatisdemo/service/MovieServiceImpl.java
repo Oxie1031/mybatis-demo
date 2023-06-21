@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie getMovie(int id) {
+    public Movie getMovie(String id) {
         Movie movie = movieMapper.findOptionalById(id)
                 .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
         return movie;
@@ -49,17 +50,19 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie addMovie(Movie movie) {
+        String uuidString = UUID.randomUUID().toString();
+        movie.setId(uuidString);
+
         movieMapper.insert(movie);
 
-        int newMovieId = movieMapper.getLatestMovieId();
-
-        Movie newMovie = movieMapper.findById(newMovieId);
+        Movie newMovie = movieMapper.findById(uuidString);
         return newMovie;
     }
 
 
+
     @Override
-    public Movie updateMovie(int id, Movie movie) {
+    public Movie updateMovie(String  id, Movie movie) {
         movieMapper.update(id, movie);
 
         Movie updatedMovie = movieMapper.findById(id);
@@ -67,7 +70,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie deleteMovie(int id) {
+    public Movie deleteMovie(String  id) {
         Movie deletedMovie = movieMapper.findById(id);
 
         movieMapper.delete(id);
@@ -76,7 +79,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie patchMovie(int id, Map<String, Object> updates) {
+    public Movie patchMovie(String  id, Map<String, Object> updates) {
         Movie movieToUpdate = movieMapper.findOptionalById(id)
                 .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
@@ -94,9 +97,5 @@ public class MovieServiceImpl implements MovieService {
         movieMapper.update(id, movieToUpdate);
         return  movieToUpdate;
     }
-
-
-
-
 
 }

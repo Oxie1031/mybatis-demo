@@ -2,7 +2,7 @@ package com.example.mybatisdemo.entity;
 
 
 public class Movie {
-    private int id;
+    private String id;
     private String name;
     private String director;
     private int year;
@@ -12,7 +12,7 @@ public class Movie {
     public  Movie() {
 
     }
-    public Movie(int id, String name, String director, int year, double rating, int runtime) {
+    public Movie(String id, String name, String director, int year, double rating, int runtime) {
         this.id = id;
         this.name = name;
         this.director = director;
@@ -21,11 +21,11 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
