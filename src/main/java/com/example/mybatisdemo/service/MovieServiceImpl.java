@@ -1,14 +1,12 @@
 package com.example.mybatisdemo.service;
 
-import com.example.mybatisdemo.controller.MovieResponse;
 import com.example.mybatisdemo.entity.Movie;
-import com.example.mybatisdemo.mapper.MovieMapper;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
+import com.example.mybatisdemo.mapper.MovieMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -21,6 +19,7 @@ public class MovieServiceImpl implements MovieService {
     public MovieServiceImpl(MovieMapper movieMapper) {
         this.movieMapper = movieMapper;
     }
+
 
     @Override
     public List<Movie> getAllMovies() {
@@ -90,9 +89,9 @@ public class MovieServiceImpl implements MovieService {
             movieToUpdate.setYear((int) updates.get("year"));
         }
 
-
         movieMapper.update(id, movieToUpdate);
         return  movieToUpdate;
     }
+
 
 }

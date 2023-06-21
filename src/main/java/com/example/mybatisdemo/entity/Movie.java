@@ -1,12 +1,32 @@
 package com.example.mybatisdemo.entity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class Movie {
     private String id;
+    @NotNull
+    @NotBlank
     private String name;
+
+    @NotNull
+    @NotBlank
     private String director;
+
+    @NotNull
+    @Min(1800)
+    @Max(2100)
     private int year;
+
+    @NotNull
+    @Min(0)
+    @Max(10)
     private double rating;
+
+    @NotNull
+    @Min(1)
     private int runtime;
 
     public  Movie() {

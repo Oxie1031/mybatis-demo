@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
@@ -30,12 +32,22 @@ public class CustomExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("timestamp", ZonedDateTime.now().toString());
-        errors.put("status", String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        errors.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errors.put("path", request.getRequestURI());
-        return errors;
+    public Map<String, Object> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", ZonedDateTime.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        body.put("path", request.getRequestURI());
+
+        List<Map<String, String>> errorDetails = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> Map.of(
+                        "field", fieldError.getField(),
+                        "defaultMessage", fieldError.getDefaultMessage()
+                ))
+                .collect(Collectors.toList());
+
+        body.put("errors", errorDetails);
+
+        return body;
     }
 }
