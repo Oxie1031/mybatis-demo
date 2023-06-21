@@ -22,57 +22,57 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieResponse> getAllMovies() {
-        return movieMapper.findAll().stream().map(this::convertToResponse).collect(Collectors.toList());
+    public List<Movie> getAllMovies() {
+        return movieMapper.findAll().stream().collect(Collectors.toList());
     }
 
     @Override
-    public MovieResponse getMovie(int id) {
+    public Movie getMovie(int id) {
         Movie movie = movieMapper.findOptionalById(id)
                 .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
-        return convertToResponse(movie);
+        return movie;
     }
 
 
 
     @Override
-    public List<MovieResponse> getMoviesByPublishedYear(int year) {
+    public List<Movie> getMoviesByPublishedYear(int year) {
         List<Movie> movies = movieMapper.findByPublishedYear(year);
         if (movies == null || movies.isEmpty()) {
             throw new MovieNotFoundException("No movies were found for the year: " + year);
         }
 
-        return movies.stream().map(this::convertToResponse).collect(Collectors.toList());
+        return movies.stream().collect(Collectors.toList());
     }
 
 
 
     @Override
-    public MovieResponse addMovie(Movie movie) {
+    public Movie addMovie(Movie movie) {
         movieMapper.insert(movie);
 
         int newMovieId = movieMapper.getLatestMovieId();
 
         Movie newMovie = movieMapper.findById(newMovieId);
-        return convertToResponse(newMovie);
+        return newMovie;
     }
 
 
     @Override
-    public MovieResponse updateMovie(int id, Movie movie) {
+    public Movie updateMovie(int id, Movie movie) {
         movieMapper.update(id, movie);
 
         Movie updatedMovie = movieMapper.findById(id);
-        return convertToResponse(updatedMovie);
+        return updatedMovie;
     }
 
     @Override
-    public MovieResponse deleteMovie(int id) {
+    public Movie deleteMovie(int id) {
         Movie deletedMovie = movieMapper.findById(id);
 
         movieMapper.delete(id);
 
-        return convertToResponse(deletedMovie);
+        return deletedMovie;
     }
 
     @Override
@@ -97,13 +97,6 @@ public class MovieServiceImpl implements MovieService {
 
 
 
-    private MovieResponse convertToResponse(Movie movie) {
-        MovieResponse response = new MovieResponse();
-        response.setId(movie.getId());
-        response.setName(movie.getName());
-        response.setDirector(movie.getDirector());
-        response.setYear(movie.getYear());
-        return response;
-    }
+
 
 }

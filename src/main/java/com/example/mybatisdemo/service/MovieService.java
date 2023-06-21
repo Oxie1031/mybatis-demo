@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 public interface MovieService {
-    List<MovieResponse> getAllMovies();
-    MovieResponse getMovie(int id);
-    List<MovieResponse> getMoviesByPublishedYear(int year);
-    MovieResponse addMovie(Movie movie);
-    MovieResponse updateMovie(int id, Movie movie);
-    MovieResponse deleteMovie(int id);
+    List<Movie> getAllMovies();
+    Movie getMovie(int id);
+    List<Movie> getMoviesByPublishedYear(int year);
+    Movie addMovie(Movie movie);
+    Movie updateMovie(int id, Movie movie);
+    Movie deleteMovie(int id);
     Movie patchMovie(int id, Map<String, Object> updates);
 }
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movies")
@@ -22,24 +23,28 @@ public class MovieController {
 
     @GetMapping
     public List<MovieResponse> getAllMovies() {
-        return movieService.getAllMovies();
+        return movieService.getAllMovies().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
+
 
     @GetMapping("/{id}")
     public MovieResponse getMovie(@PathVariable int id) {
-        return movieService.getMovie(id);
+       return convertToResponse(movieService.getMovie(id));
     }
 
     @GetMapping(params = "published_year")
     public List<MovieResponse> getMoviesByPublishedYear(@RequestParam("published_year") int year) {
-        return movieService.getMoviesByPublishedYear(year);
+        return movieService.getMoviesByPublishedYear(year)
+                .stream().map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<MovieResponse>> addMovie(@RequestBody Movie movie) {
-        MovieResponse addedMovieResponse = movieService.addMovie(movie);
 
-        ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully added.", addedMovieResponse);
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully added.", convertToResponse(movieService.addMovie(movie)));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -47,10 +52,7 @@ public class MovieController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable int id, @RequestBody Map<String, Object> updates) {
-        Movie updatedMovie = movieService.patchMovie(id, updates);
-
-        MovieResponse updatedMovieResponse = new MovieResponse(updatedMovie.getId(),updatedMovie.getName(),updatedMovie.getDirector(),updatedMovie.getYear());
-        ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully updated.", updatedMovieResponse);
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully updated.", convertToResponse(movieService.patchMovie(id, updates)));
 
         return ResponseEntity.ok(response);
     }
@@ -58,23 +60,23 @@ public class MovieController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponse>> updateMovie(@PathVariable int id, @RequestBody Movie movie) {
-        movieService.updateMovie(id, movie);
 
-        MovieResponse updatedMovieResponse = movieService.getMovie(id);
-
-        ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully updated.", updatedMovieResponse);
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully updated.", convertToResponse(movieService.updateMovie(id, movie)));
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponse>> deleteMovie(@PathVariable int id) {
-        MovieResponse deletedMovieResponse = movieService.getMovie(id);
 
-        movieService.deleteMovie(id);
-        ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully deleted.",deletedMovieResponse);
-
+        ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully deleted.",convertToResponse(movieService.deleteMovie(id)));
         return ResponseEntity.ok(response);
     }
 
+    private MovieResponse convertToResponse(Movie movie) {
+        MovieResponse response = new MovieResponse((movie.getId()),movie.getName(),movie.getDirector(),movie.getYear());
+        return response;
+    }
+
 }
+
