@@ -4,18 +4,15 @@ import com.example.mybatisdemo.entity.Movie;
 import com.example.mybatisdemo.service.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movies")
-@Validated
 public class MovieController {
 
     private final MovieService movieService;
@@ -45,7 +42,7 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MovieResponse>> addMovie(@Valid @RequestBody Movie movie, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<MovieResponse>> addMovie(@Validated @RequestBody Movie movie) {
 
         ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully added.", convertToResponse(movieService.addMovie(movie)));
 
@@ -54,7 +51,7 @@ public class MovieController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable String id, @Validated @RequestBody Map<String, Object> updates) {
         ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully updated.", convertToResponse(movieService.patchMovie(id, updates)));
 
         return ResponseEntity.ok(response);
@@ -62,7 +59,7 @@ public class MovieController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> updateMovie(@PathVariable String id, @Valid @RequestBody Movie movie) {
+    public ResponseEntity<ApiResponse<MovieResponse>> updateMovie(@PathVariable String id, @Validated @RequestBody Movie movie) {
 
         ApiResponse<MovieResponse> response = new ApiResponse<>("success","Movie successfully updated.", convertToResponse(movieService.updateMovie(id, movie)));
 

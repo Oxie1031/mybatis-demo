@@ -1,9 +1,12 @@
 package com.example.mybatisdemo.entity;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+
 
 public class Movie {
     private String id;
@@ -29,9 +32,7 @@ public class Movie {
     @Min(1)
     private int runtime;
 
-    public  Movie() {
 
-    }
     public Movie(String id, String name, String director, int year, double rating, int runtime) {
         this.id = id;
         this.name = name;
