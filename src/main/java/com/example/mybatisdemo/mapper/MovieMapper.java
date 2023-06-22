@@ -1,14 +1,10 @@
 package com.example.mybatisdemo.mapper;
 
 import com.example.mybatisdemo.entity.Movie;
-import com.example.mybatisdemo.exception.MovieNotFoundException;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.*;
-import  java.util.List;
-import java.util.Optional;
 
-import org.apache.ibatis.annotations.*;
+import java.util.List;
+import java.util.Optional;
 
 
 
@@ -23,8 +19,6 @@ public interface MovieMapper {
     @Select("SELECT * FROM movies WHERE id = #{id}")
     Movie findById(String id);
 
-    @Select("SELECT id FROM movies ORDER BY id DESC LIMIT 1")
-    int getLatestMovieId();
 
     @Select("SELECT * FROM movies WHERE year = #{year}")
     List<Movie> findByPublishedYear(int year);
