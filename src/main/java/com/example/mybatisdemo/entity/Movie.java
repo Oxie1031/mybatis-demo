@@ -1,11 +1,9 @@
 package com.example.mybatisdemo.entity;
 
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
 
 
 public class Movie {
@@ -24,16 +22,16 @@ public class Movie {
     private int year;
 
     @NotNull
-    @Min(0)
-    @Max(10)
-    private double rating;
+    @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    private BigDecimal rating;
 
     @NotNull
     @Min(1)
     private int runtime;
 
 
-    public Movie(String id, String name, String director, int year, double rating, int runtime) {
+    public Movie(String id, String name, String director, int year, BigDecimal rating, int runtime) {
         this.id = id;
         this.name = name;
         this.director = director;
@@ -74,11 +72,11 @@ public class Movie {
         this.year = year;
     }
 
-    public double getRating() {
+    public BigDecimal getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(BigDecimal rating) {
         this.rating = rating;
     }
 
