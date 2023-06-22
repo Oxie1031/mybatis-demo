@@ -1,15 +1,37 @@
 package com.example.mybatisdemo.entity;
 
 
+import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
+
+
 public class Movie {
-    private int id;
+    private String id;
+    @NotNull
+    @NotBlank
     private String name;
+
+    @NotNull
+    @NotBlank
     private String director;
+
+    @NotNull
+    @Min(1800)
+    @Max(2100)
     private int year;
-    private double rating;
+
+    @NotNull
+    @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    private BigDecimal rating;
+
+    @NotNull
+    @Min(1)
     private int runtime;
 
-    public Movie(int id, String name, String director, int year, double rating, int runtime) {
+
+    public Movie(String id, String name, String director, int year, BigDecimal rating, int runtime) {
         this.id = id;
         this.name = name;
         this.director = director;
@@ -18,11 +40,11 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -50,11 +72,11 @@ public class Movie {
         this.year = year;
     }
 
-    public double getRating() {
+    public BigDecimal getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(BigDecimal rating) {
         this.rating = rating;
     }
 

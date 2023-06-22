@@ -1,28 +1,27 @@
 package com.example.mybatisdemo.controller;
 
+import com.example.mybatisdemo.entity.Movie;
+
 public class MovieResponse {
-    private int id;
+    private String id;
     private String name;
     private String director;
     private int year;
 
 
-    public MovieResponse() {
-
+    public MovieResponse(Movie movie) {
+        this.id = movie.getId();
+        this.name = movie.getName();
+        this.director = movie.getDirector();
+        this.year = movie.getYear();
     }
 
-    public MovieResponse(int id, String name, String director, int year) {
-        this.id = id;
-        this.name = name;
-        this.director = director;
-        this.year = year;
-    }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

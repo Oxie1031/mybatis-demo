@@ -1,12 +1,13 @@
 package com.example.mybatisdemo.service;
 
-import com.example.mybatisdemo.controller.MovieResponse;
 import com.example.mybatisdemo.entity.Movie;
-import com.example.mybatisdemo.mapper.MovieMapper;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
+import com.example.mybatisdemo.mapper.MovieMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,45 +20,78 @@ public class MovieServiceImpl implements MovieService {
         this.movieMapper = movieMapper;
     }
 
+
     @Override
-    public List<MovieResponse> getAllMovies() {
-        return movieMapper.findAll().stream().map(this::convertToResponse).collect(Collectors.toList());
+    public List<Movie> getAllMovies() {
+        return movieMapper.findAll().stream().collect(Collectors.toList());
     }
 
     @Override
-    public MovieResponse getMovie(int id) {
-        return convertToResponse(movieMapper.findById(id));
+    public Movie getMovie(String id) {
+        Movie movie = movieMapper.findOptionalById(id)
+                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
+        return movie;
     }
 
+
+
     @Override
-    public List<MovieResponse> getMoviesByPublishedYear(int year) {
+    public List<Movie> getMoviesByPublishedYear(int year) {
         List<Movie> movies = movieMapper.findByPublishedYear(year);
-        return movies.stream().map(this::convertToResponse).collect(Collectors.toList());
+
+        return movies.stream().collect(Collectors.toList());
     }
 
 
+
     @Override
-    public void addMovie(Movie movie) {
+    public Movie addMovie(Movie movie) {
+        String uuidString = UUID.randomUUID().toString();
+        movie.setId(uuidString);
+
         movieMapper.insert(movie);
+
+        Movie newMovie = movieMapper.findById(uuidString);
+        return newMovie;
     }
 
+
+
     @Override
-    public void updateMovie(int id, Movie movie) {
+    public Movie updateMovie(String  id, Movie movie) {
         movieMapper.update(id, movie);
+
+        Movie updatedMovie = movieMapper.findById(id);
+        return updatedMovie;
     }
 
     @Override
-    public void deleteMovie(int id) {
+    public Movie deleteMovie(String  id) {
+        Movie deletedMovie = movieMapper.findById(id);
+
         movieMapper.delete(id);
+
+        return deletedMovie;
     }
 
-    private MovieResponse convertToResponse(Movie movie) {
-        MovieResponse response = new MovieResponse();
-        response.setId(movie.getId());
-        response.setName(movie.getName());
-        response.setDirector(movie.getDirector());
-        response.setYear(movie.getYear());
-        return response;
+    @Override
+    public Movie patchMovie(String  id, Map<String, Object> updates) {
+        Movie movieToUpdate = movieMapper.findOptionalById(id)
+                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
+
+        if(updates.containsKey("name")){
+            movieToUpdate.setName((String) updates.get("name"));
+        }
+        if(updates.containsKey("director")){
+            movieToUpdate.setDirector((String) updates.get("director"));
+        }
+        if(updates.containsKey("year")){
+            movieToUpdate.setYear((int) updates.get("year"));
+        }
+
+        movieMapper.update(id, movieToUpdate);
+        return  movieToUpdate;
     }
+
 
 }
