@@ -31,3 +31,5 @@ public interface MovieMapper {
     @Delete("DELETE FROM movies WHERE id = #{id}")
     void delete(String  id);
 }
+
+
