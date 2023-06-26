@@ -47,7 +47,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie addMovie(Movie movie) {
-        String uuidString = generateUuid();
+        String uuidString = UUID.randomUUID().toString();
         movie.setId(uuidString);
 
         movieMapper.insert(movie);
@@ -102,14 +102,8 @@ public class MovieServiceImpl implements MovieService {
             movieToUpdate.setRuntime((int) updates.get("runtime"));
         }
 
-
         movieMapper.update(id, movieToUpdate);
         return  movieToUpdate;
     }
-
-    public String generateUuid() {
-        return UUID.randomUUID().toString();
-    }
-
 
 }

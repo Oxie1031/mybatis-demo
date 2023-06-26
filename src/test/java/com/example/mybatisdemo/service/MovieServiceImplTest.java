@@ -56,7 +56,6 @@ class MovieServiceImplTest {
         assertThat(actualMovie).isEqualTo(expectedMovie);
     }
 
-    //public void 存在しないidを指定した時に例外がスローされること()
 
     @Test
     public void 指定のIDの映画が存在しないときに例外をThrowすること() {
@@ -78,7 +77,6 @@ class MovieServiceImplTest {
         assertThat(actualMovies).isEqualTo(expectedMovies);
     }
 
-    //public void DBに存在しない年の映画を指定した時に空のリストが返されること()
 
     @Test
     public void DBに存在しない年の映画を指定した時に空のリストが返されること() {
@@ -97,20 +95,16 @@ class MovieServiceImplTest {
         // Prepare a movie without ID
         Movie movieToInsert = new Movie(null,"TestMovie", "TestDirector", 1, new BigDecimal(1), 1);
 
-        // Mock the findById method to return a new movie object with the same data but a generated ID
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             String id = (String) args[0];
             return new Movie(id, movieToInsert.getName(), movieToInsert.getDirector(), movieToInsert.getYear(), movieToInsert.getRating(), movieToInsert.getRuntime());
         }).when(movieMapper).findById(any(String.class));
 
-        // Call the method under test
         Movie actualMovie = movieService.addMovie(movieToInsert);
 
-        // Assert that the returned movie has an ID
         assertNotNull(actualMovie.getId());
 
-        // Assert that the other fields are correctly set
         assertEquals(movieToInsert.getName(), actualMovie.getName());
         assertEquals(movieToInsert.getDirector(), actualMovie.getDirector());
         assertEquals(movieToInsert.getYear(), actualMovie.getYear());

@@ -14,6 +14,5 @@ public interface MovieService {
     Movie deleteMovie(String  id);
     Movie patchMovie(String  id, Map<String, Object> updates);
 
-    String  generateUuid();
 }
 
