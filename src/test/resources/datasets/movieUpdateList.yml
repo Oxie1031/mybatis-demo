@@ -6,14 +6,15 @@ movies:
     rating: 8.5
     runtime: 117
   - id: "test2"
-    name: "マルフォイ"
-    director: "ルシウス・マルフォイ"
-    year: 2000
-    rating: 1.5
-    runtime: 118
+    name: "ターミネーター"
+    director: "ジェームズ・キャメロン"
+    year: 1984
+    rating: 8.5
+    runtime: 108
   - id: "test3"
     name: "アンブリッチ"
     director: "ドローレス・アンブリッチ"
     year: 2001
     rating: 9.5
     runtime: 119
+

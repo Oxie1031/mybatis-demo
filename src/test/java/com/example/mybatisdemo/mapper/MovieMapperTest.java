@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,7 @@ class MovieMapperTest {
     MovieMapper movieMapper;
 
     @Test
-    @DataSet(value = "movieList.yml")
+    @DataSet(value = "datasets/movieList.yml")
     @Transactional
     public void すべての映画が取得できること() {
         List<Movie> movieList = movieMapper.findAll();
@@ -39,7 +38,7 @@ class MovieMapperTest {
     }
 
     @Test
-    @DataSet(value = "movieEmpty.yml")
+    @DataSet(value = "datasets/movieEmpty.yml")
     @Transactional
     public void 映画が存在しない時は空のListを返すこと() {
         List<Movie> movieList = movieMapper.findAll();
@@ -47,7 +46,7 @@ class MovieMapperTest {
     }
 
     @Test
-    @DataSet(value = "movieList.yml")
+    @DataSet(value = "datasets/movieList.yml")
     @Transactional
     public void 指定の年の映画が取得できること() {
         List<Movie> movieList = movieMapper.findByPublishedYear(2000);
@@ -59,9 +58,9 @@ class MovieMapperTest {
     }
 
     @Test
-    @DataSet(value = "movieList.yml")
+    @DataSet(value = "datasets/movieList.yml")
     @Transactional
-    public void 指定のIDの映画が取得できること() {
+    public void 指定したidの映画が取得できること() {
         Optional<Movie> movie = movieMapper.findOptionalById("test1");
         assertThat(movie).contains(
                 new Movie("test1", "ハリポタ", "ハリポタ・ポッタポッター", 1999, new BigDecimal(8.5), 117)
@@ -69,25 +68,36 @@ class MovieMapperTest {
     }
 
     @Test
-    @DataSet(value = "movieList.yml")
+    @DataSet(value = "datasets/movieList.yml")
     @Transactional
-    public void 指定したidの映画が存在しない時空のOptionalを返すこと() {
+    public void 指定したidの映画が存在しない時に空の要素を返すこと() {
         Optional<Movie> movie = movieMapper.findOptionalById("test100");
         assertThat(movie).isEmpty();
     }
 
+    @Test
+    @Transactional
+    @DataSet(value = "datasets/movieList.yml")
+    @ExpectedDataSet(value = "datasets/movieInsert.yml")
+    public void 新しい映画が追加できること() {
+        Movie newMovie = new Movie("test4", "新作映画", "新作・映画", 2024, new BigDecimal(9.5), 120);
+        movieMapper.insert(newMovie);
+    }
+
+
 
     @Test
     @Transactional
-    @DataSet(value = "movieList.yml")
+    @DataSet(value = "datasets/movieList.yml")
     @ExpectedDataSet(value = "movieUpdateList.yml")
     public void 映画情報を上書きできること() {
-        Movie updateMovie = new Movie("test2", "ターミネーター", "ジェームズ・キャメロン", 1984, new BigDecimal(8.4), 108);
+        Movie updateMovie = new Movie("test2", "ターミネーター", "ジェームズ・キャメロン", 1984, new BigDecimal(8.5), 108);
         movieMapper.update("test2", updateMovie);
     }
+
     @Test
     @Transactional
-    @DataSet(value = "movieList.yml")
+    @DataSet(value = "datasets/movieList.yml")
     @ExpectedDataSet(value = "movieDeleteList.yml")
     public void 映画を削除できること() {
         movieMapper.delete("test1");
