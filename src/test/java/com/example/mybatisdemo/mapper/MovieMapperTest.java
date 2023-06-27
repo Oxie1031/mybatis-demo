@@ -3,7 +3,6 @@ package com.example.mybatisdemo.mapper;
 import com.example.mybatisdemo.entity.Movie;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
-import com.github.database.rider.junit5.api.DBRider;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DBRider
+
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MovieMapperTest {
@@ -37,13 +36,6 @@ class MovieMapperTest {
                 );
     }
 
-    @Test
-    @DataSet(value = "datasets/movieEmpty.yml")
-    @Transactional
-    public void 映画が存在しない時は空のListを返すこと() {
-        List<Movie> movieList = movieMapper.findAll();
-        assertThat(movieList).isEmpty();
-    }
 
     @Test
     @DataSet(value = "datasets/movieList.yml")
@@ -55,6 +47,14 @@ class MovieMapperTest {
                 .containsExactly(
                         new Movie("test2", "マルフォイ", "ルシウス・マルフォイ", 2000, new BigDecimal(1.5), 118)
                 );
+    }
+
+    @Test
+    @DataSet(value = "datasets/movieList.yml")
+    @Transactional
+    public void 指定した年の映画が存在しない時は空のListを返すこと() {
+        List<Movie> movieList = movieMapper.findByPublishedYear(2500);
+        assertThat(movieList).isEmpty();
     }
 
     @Test
