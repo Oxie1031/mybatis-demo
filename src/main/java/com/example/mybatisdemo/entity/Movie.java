@@ -8,7 +8,7 @@ import java.util.Objects;
 
 
 public class Movie {
-    private String id;
+    private String id; //後日UUIDに変更
     @NotNull
     @NotBlank
     private String name;
