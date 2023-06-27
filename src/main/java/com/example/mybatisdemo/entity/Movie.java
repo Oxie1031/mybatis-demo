@@ -4,6 +4,7 @@ package com.example.mybatisdemo.entity;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 
 public class Movie {
@@ -99,4 +100,28 @@ public class Movie {
                 ", runtime=" + runtime +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Movie other = (Movie) obj;
+        return Objects.equals(id, other.id)
+                && Objects.equals(name, other.name)
+                && Objects.equals(director, other.director)
+                && year == other.year
+                && Objects.equals(rating, other.rating)
+                && runtime == other.runtime;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, director, year, rating, runtime);
+    }
+
 }
+

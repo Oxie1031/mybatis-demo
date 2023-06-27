@@ -19,7 +19,6 @@ public interface MovieMapper {
     @Select("SELECT * FROM movies WHERE id = #{id}")
     Movie findById(String id);
 
-
     @Select("SELECT * FROM movies WHERE year = #{year}")
     List<Movie> findByPublishedYear(int year);
 
@@ -32,3 +31,5 @@ public interface MovieMapper {
     @Delete("DELETE FROM movies WHERE id = #{id}")
     void delete(String  id);
 }
+
+

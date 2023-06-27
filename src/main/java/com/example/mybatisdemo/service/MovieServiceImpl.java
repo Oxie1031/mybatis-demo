@@ -5,6 +5,7 @@ import com.example.mybatisdemo.exception.MovieNotFoundException;
 import com.example.mybatisdemo.mapper.MovieMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -58,21 +59,27 @@ public class MovieServiceImpl implements MovieService {
 
 
     @Override
-    public Movie updateMovie(String  id, Movie movie) {
-        movieMapper.update(id, movie);
+    public Movie updateMovie(String id, Movie movie) {
+        Movie existingMovie = movieMapper.findOptionalById(id)
+                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
-        Movie updatedMovie = movieMapper.findById(id);
+        movieMapper.update(id, movie);
+        Movie updatedMovie = movieMapper.findOptionalById(id).orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
+
         return updatedMovie;
     }
 
+
     @Override
-    public Movie deleteMovie(String  id) {
-        Movie deletedMovie = movieMapper.findById(id);
+    public Movie deleteMovie(String id) {
+        Movie movieToDelete = movieMapper.findOptionalById(id)
+                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
         movieMapper.delete(id);
 
-        return deletedMovie;
+        return movieToDelete;
     }
+
 
     @Override
     public Movie patchMovie(String  id, Map<String, Object> updates) {
@@ -88,10 +95,15 @@ public class MovieServiceImpl implements MovieService {
         if(updates.containsKey("year")){
             movieToUpdate.setYear((int) updates.get("year"));
         }
+        if(updates.containsKey("rating")){
+            movieToUpdate.setRating((BigDecimal) updates.get("rating"));
+        }
+        if(updates.containsKey("runtime")){
+            movieToUpdate.setRuntime((int) updates.get("runtime"));
+        }
 
         movieMapper.update(id, movieToUpdate);
         return  movieToUpdate;
     }
-
 
 }

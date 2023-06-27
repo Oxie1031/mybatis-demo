@@ -1,6 +1,5 @@
 package com.example.mybatisdemo.service;
 
-import com.example.mybatisdemo.controller.MovieResponse;
 import com.example.mybatisdemo.entity.Movie;
 
 import java.util.List;
@@ -14,5 +13,6 @@ public interface MovieService {
     Movie updateMovie(String  id, Movie movie);
     Movie deleteMovie(String  id);
     Movie patchMovie(String  id, Map<String, Object> updates);
+
 }
 
