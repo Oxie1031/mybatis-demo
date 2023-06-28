@@ -1,0 +1,25 @@
+movies:
+  - id: "test1"
+    name: "ハリポタ"
+    director: "ハリポタ・ポッタポッター"
+    year: 1999
+    rating: 8.5
+    runtime: 117
+  - id: "test2"
+    name: "マルフォイ"
+    director: "ルシウス・マルフォイ"
+    year: 2000
+    rating: 1.5
+    runtime: 118
+  - id: "test3"
+    name: "アンブリッチ"
+    director: "ドローレス・アンブリッチ"
+    year: 2001
+    rating: 9.5
+    runtime: 119
+  - id: "test4"
+    name: "新作映画"
+    director: "新作・映画"
+    year: 2024
+    rating: 9.5
+    runtime: 120

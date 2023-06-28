@@ -1,0 +1,13 @@
+movies:
+  - id: "test2"
+    name: "マルフォイ"
+    director: "ルシウス・マルフォイ"
+    year: 2000
+    rating: 1.5
+    runtime: 118
+  - id: "test3"
+    name: "アンブリッチ"
+    director: "ドローレス・アンブリッチ"
+    year: 2001
+    rating: 9.5
+    runtime: 119

@@ -81,6 +81,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
 
+    //後日更新処理をMovieに移し、引数として利用するPatchMovieInputクラスを作成
     @Override
     public Movie patchMovie(String  id, Map<String, Object> updates) {
         Movie movieToUpdate = movieMapper.findOptionalById(id)
