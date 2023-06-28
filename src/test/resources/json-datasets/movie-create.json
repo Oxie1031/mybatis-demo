@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "message": "Movie successfully added.",
+  "data": {
+    "id": "test1",
+    "name": "ハリポタ",
+    "director": "ハリポタ・ポッタポッター",
+    "year": 1999
+  }
+}
+

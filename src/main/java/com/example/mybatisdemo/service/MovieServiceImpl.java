@@ -60,8 +60,6 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Movie updateMovie(String id, Movie movie) {
-        Movie existingMovie = movieMapper.findOptionalById(id)
-                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
         movieMapper.update(id, movie);
         Movie updatedMovie = movieMapper.findOptionalById(id).orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
@@ -81,7 +79,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
 
-    //後日更新処理をMovieに移し、引数として利用するPatchMovieInputクラスを作成
+//TODO:後日更新処理をMovieに移し、引数として利用するPatchMovieInputクラスを作成
     @Override
     public Movie patchMovie(String  id, Map<String, Object> updates) {
         Movie movieToUpdate = movieMapper.findOptionalById(id)
