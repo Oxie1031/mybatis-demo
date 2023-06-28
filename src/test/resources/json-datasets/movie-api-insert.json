@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "message": "Movie successfully added.",
+  "data": {
+    "id": "test4",
+    "name": "新作映画",
+    "director": "新作・映画",
+    "year": 2024
+  }
+}
