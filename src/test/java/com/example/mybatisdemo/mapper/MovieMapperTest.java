@@ -30,7 +30,7 @@ class MovieMapperTest {
         assertThat(movieList)
                 .hasSize(3)
                 .containsExactly(
-                        new Movie("test1", "ハリポタ", "ハリポタ・ポッタポッター", 1999, new BigDecimal(8.5), 117),
+                        new Movie("test1", "ハリポタ", "ハリポタ・ポッターポッター", 1999, new BigDecimal(8.5), 117),
                         new Movie("test2", "マルフォイ", "ルシウス・マルフォイ", 2000, new BigDecimal(1.5), 118),
                         new Movie("test3", "アンブリッチ", "ドローレス・アンブリッチ", 2001, new BigDecimal(9.5), 119)
                 );
@@ -63,7 +63,7 @@ class MovieMapperTest {
     public void 指定したidの映画が取得できること() {
         Optional<Movie> movie = movieMapper.findOptionalById("test1");
         assertThat(movie).contains(
-                new Movie("test1", "ハリポタ", "ハリポタ・ポッタポッター", 1999, new BigDecimal(8.5), 117)
+                new Movie("test1", "ハリポタ", "ハリポタ・ポッターポッター", 1999, new BigDecimal(8.5), 117)
         );
     }
 

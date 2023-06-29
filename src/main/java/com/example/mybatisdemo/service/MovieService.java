@@ -1,9 +1,9 @@
 package com.example.mybatisdemo.service;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 
 import java.util.List;
-import java.util.Map;
 
 public interface MovieService {
     List<Movie> getAllMovies();
@@ -17,7 +17,7 @@ public interface MovieService {
     /**
      * PUTとPATCH処理の練習のため、機能は重複するがサンプルとして作成
      */
-    Movie patchMovie(String  id, Map<String, Object> updates);
+    Movie patchMovie(String  id, PatchMovieForm updates);
 
 }
 

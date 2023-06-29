@@ -2,6 +2,7 @@ package com.example.mybatisdemo.integration;
 
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -407,10 +408,10 @@ public class MovieRestApiIntegrationTest {
         try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
             zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("name", "");
-            updates.put("director", "test");
-            updates.put("year", 2000);
+            PatchMovieForm updates = new PatchMovieForm();
+            updates.setName("");
+            updates.setDirector("test");
+            updates.setYear(2000);
 
 
             String actualResult = mockMvc
@@ -436,10 +437,10 @@ public class MovieRestApiIntegrationTest {
         try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
             zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("name", "test");
-            updates.put("director", "");
-            updates.put("year", 2000);
+            PatchMovieForm updates = new PatchMovieForm();
+            updates.setName("test");
+            updates.setDirector("");
+            updates.setYear(2000);
 
 
             String actualResult = mockMvc
@@ -465,10 +466,10 @@ public class MovieRestApiIntegrationTest {
         try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
             zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("name", "test");
-            updates.put("director", "test");
-            updates.put("year", 20000);
+            PatchMovieForm updates = new PatchMovieForm();
+            updates.setName("test");
+            updates.setDirector("test");
+            updates.setYear(20000);
 
 
             String actualResult = mockMvc
@@ -494,8 +495,11 @@ public class MovieRestApiIntegrationTest {
         try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
             zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("rating", 20);
+            PatchMovieForm updates = new PatchMovieForm();
+            updates.setName("test");
+            updates.setDirector("test");
+            updates.setYear(2000);
+            updates.setRating(new BigDecimal(20));
 
             String actualResult = mockMvc
                     .perform(patch("/movies/test1")
@@ -519,8 +523,12 @@ public class MovieRestApiIntegrationTest {
         try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
             zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("runtime", 0);
+            PatchMovieForm updates = new PatchMovieForm();
+            updates.setName("test");
+            updates.setDirector("test");
+            updates.setYear(2000);
+            updates.setRating(new BigDecimal(10));
+            updates.setRuntime(0);
 
             String actualResult = mockMvc
                     .perform(patch("/movies/test1")

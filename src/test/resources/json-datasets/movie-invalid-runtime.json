@@ -1,7 +1,12 @@
 {
   "path": "/movies/test1",
   "error": "Bad Request",
-  "message": "Runtime should be greater than 0",
+  "errors": [
+    {
+      "field": "runtime",
+      "defaultMessage": "must be greater than or equal to 1"
+    }
+  ],
   "timestamp": "2023-06-28T13:00+09:00[Asia/Tokyo]",
   "status": 400
 }

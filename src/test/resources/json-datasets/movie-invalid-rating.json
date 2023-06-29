@@ -1,7 +1,12 @@
 {
   "path": "/movies/test1",
   "error": "Bad Request",
-  "message": "Rating should be between 0.0 and 10.0",
+  "errors": [
+    {
+      "field": "rating",
+      "defaultMessage": "must be less than or equal to 10.0"
+    }
+  ],
   "timestamp": "2023-06-28T13:00+09:00[Asia/Tokyo]",
   "status": 400
 }

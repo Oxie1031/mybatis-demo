@@ -1,15 +1,12 @@
 package com.example.mybatisdemo.service;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
-import com.example.mybatisdemo.exception.MovieValidationException;
 import com.example.mybatisdemo.mapper.MovieMapper;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -77,54 +74,21 @@ public class MovieServiceImpl implements MovieService {
         return movieToDelete;
     }
 
-
-//TODO:後日更新処理をMovieに移し、引数として利用するPatchMovieInputクラスを作成
-
     @Override
-    public Movie patchMovie(String id, Map<String, Object> updates) {
+    public Movie patchMovie(String id, PatchMovieForm updates) {
         Movie movieToUpdate = movieMapper.findOptionalById(id)
                 .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
-        if(updates.containsKey("name")){
-            String name = (String) updates.get("name");
-            if(StringUtils.isBlank(name)){
-                throw new MovieValidationException("Name cannot be blank");
-            }
-            movieToUpdate.setName(name);
-        }
-        if(updates.containsKey("director")){
-            String director = (String) updates.get("director");
-            if(StringUtils.isBlank(director)){
-                throw new MovieValidationException("Director cannot be blank");
-            }
-            movieToUpdate.setDirector(director);
-        }
-        if(updates.containsKey("year")){
-            int year = (int) updates.get("year");
-            if(year < 1800 || year > 2100){
-                throw new MovieValidationException("Year should be between 1800 and 2100");
-            }
-            movieToUpdate.setYear(year);
-        }
-        if(updates.containsKey("rating")){
-            int rating = (int) updates.get("rating");
-            if(rating < 0 || rating > 0){
-                throw new MovieValidationException("Rating should be between 0.0 and 10.0");
-            }
-            BigDecimal BigDecimalRating = BigDecimal.valueOf(rating);
-            movieToUpdate.setRating(BigDecimalRating);
-        }
-        if(updates.containsKey("runtime")){
-            int runtime = (int) updates.get("runtime");
-            if(runtime < 1){
-                throw new MovieValidationException("Runtime should be greater than 0");
-            }
-            movieToUpdate.setRuntime(runtime);
-        }
+        updates.getName().ifPresent(movieToUpdate::setName);
+        updates.getDirector().ifPresent(movieToUpdate::setDirector);
+        updates.getYear().ifPresent(movieToUpdate::setYear);
+        updates.getRating().ifPresent(movieToUpdate::setRating);
+        updates.getRuntime().ifPresent(movieToUpdate::setRuntime);
 
         movieMapper.update(id, movieToUpdate);
-        return  movieToUpdate;
+        return movieToUpdate;
     }
+
 
 }
 

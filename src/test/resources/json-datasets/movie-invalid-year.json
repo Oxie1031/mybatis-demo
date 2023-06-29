@@ -1,7 +1,12 @@
 {
   "path": "/movies/test1",
   "error": "Bad Request",
-  "message": "Year should be between 1800 and 2100",
+  "errors": [
+    {
+      "field": "year",
+      "defaultMessage": "must be less than or equal to 2100"
+    }
+  ],
   "timestamp": "2023-06-28T13:00+09:00[Asia/Tokyo]",
   "status": 400
 }
