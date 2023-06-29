@@ -2,7 +2,9 @@ package com.example.mybatisdemo.service;
 
 import com.example.mybatisdemo.entity.Movie;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
+import com.example.mybatisdemo.exception.MovieValidationException;
 import com.example.mybatisdemo.mapper.MovieMapper;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,14 +37,12 @@ public class MovieServiceImpl implements MovieService {
     }
 
 
-
     @Override
     public List<Movie> getMoviesByPublishedYear(int year) {
         List<Movie> movies = movieMapper.findByPublishedYear(year);
 
         return movies.stream().collect(Collectors.toList());
     }
-
 
 
     @Override
@@ -55,7 +55,6 @@ public class MovieServiceImpl implements MovieService {
         Movie newMovie = movieMapper.findById(uuidString);
         return newMovie;
     }
-
 
 
     @Override
@@ -80,25 +79,47 @@ public class MovieServiceImpl implements MovieService {
 
 
 //TODO:後日更新処理をMovieに移し、引数として利用するPatchMovieInputクラスを作成
+
     @Override
-    public Movie patchMovie(String  id, Map<String, Object> updates) {
+    public Movie patchMovie(String id, Map<String, Object> updates) {
         Movie movieToUpdate = movieMapper.findOptionalById(id)
                 .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
         if(updates.containsKey("name")){
-            movieToUpdate.setName((String) updates.get("name"));
+            String name = (String) updates.get("name");
+            if(StringUtils.isBlank(name)){
+                throw new MovieValidationException("Name cannot be blank");
+            }
+            movieToUpdate.setName(name);
         }
         if(updates.containsKey("director")){
-            movieToUpdate.setDirector((String) updates.get("director"));
+            String director = (String) updates.get("director");
+            if(StringUtils.isBlank(director)){
+                throw new MovieValidationException("Director cannot be blank");
+            }
+            movieToUpdate.setDirector(director);
         }
         if(updates.containsKey("year")){
-            movieToUpdate.setYear((int) updates.get("year"));
+            int year = (int) updates.get("year");
+            if(year < 1800 || year > 2100){
+                throw new MovieValidationException("Year should be between 1800 and 2100");
+            }
+            movieToUpdate.setYear(year);
         }
         if(updates.containsKey("rating")){
-            movieToUpdate.setRating((BigDecimal) updates.get("rating"));
+            int rating = (int) updates.get("rating");
+            if(rating < 0 || rating > 0){
+                throw new MovieValidationException("Rating should be between 0.0 and 10.0");
+            }
+            BigDecimal BigDecimalRating = BigDecimal.valueOf(rating);
+            movieToUpdate.setRating(BigDecimalRating);
         }
         if(updates.containsKey("runtime")){
-            movieToUpdate.setRuntime((int) updates.get("runtime"));
+            int runtime = (int) updates.get("runtime");
+            if(runtime < 1){
+                throw new MovieValidationException("Runtime should be greater than 0");
+            }
+            movieToUpdate.setRuntime(runtime);
         }
 
         movieMapper.update(id, movieToUpdate);
@@ -106,3 +127,4 @@ public class MovieServiceImpl implements MovieService {
     }
 
 }
+

@@ -32,12 +32,9 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -63,19 +60,19 @@ public class MovieRestApiIntegrationTest {
         return StreamUtils.copyToString(jsonResult.getInputStream(), StandardCharsets.UTF_8);
     }
 
-        @Test
-        @DataSet(value = "datasets/movieList.yml")
-        void 映画が全権取得できること() throws Exception {
-            String actualResult = mockMvc
-                    .perform(MockMvcRequestBuilders.get("/movies"))
-                    .andExpect(status().isOk())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString(StandardCharsets.UTF_8);
+    @Test
+    @DataSet(value = "datasets/movieList.yml")
+    void 映画が全権取得できること() throws Exception {
+        String actualResult = mockMvc
+                .perform(MockMvcRequestBuilders.get("/movies"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
 
-            String expectedResult = objectMapper.readTree(getJsonFileData("movie-all.json")).toString();
-            JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
-        }
+        String expectedResult = objectMapper.readTree(getJsonFileData("movie-all.json")).toString();
+        JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
+    }
 
 
     @Test
@@ -189,23 +186,57 @@ public class MovieRestApiIntegrationTest {
         JSONAssert.assertEquals(expectedResult, actualJson.toString(), JSONCompareMode.STRICT);
     }
 
-
     @Test
-    void 不正な内容で映画を新規登録するとエラーが返されること() throws Exception {
-        mockMvc.perform(post("/movies")
-                        // 入力を空で受け付けた場合
-                        .content("""
-                    {
-                        "name":"",
-                        "director": "Testing",
-                        "year": 20000,
-                        "rating": 15,
-                        "runtime":""
-                    }
-                 """)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+    public void 不正な内容で映画を新規登録するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("name", "");
+            updates.put("director", "");
+            updates.put("year", 19999);
+            updates.put("rating", 100);
+            updates.put("runtime", 0);
+
+            String actualResult = mockMvc
+                    .perform(post("/movies")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            JsonNode actualJson = objectMapper.readTree(actualResult);
+            JsonNode errorsNode = actualJson.get("errors");
+
+            // 必要なエラーメッセージとフィールドを保持するマップを作成します
+            Map<String, String> expectedErrors = new HashMap<>();
+            expectedErrors.put("director", "must not be blank");
+            expectedErrors.put("rating", "must be less than or equal to 10.0");
+            expectedErrors.put("runtime", "must be greater than or equal to 1");
+            expectedErrors.put("year", "must be less than or equal to 2100");
+            expectedErrors.put("name", "must not be blank");
+
+            // レスポンスから得られたエラーをループ処理
+            for (JsonNode errorNode : errorsNode) {
+                String field = errorNode.get("field").asText();
+                String message = errorNode.get("defaultMessage").asText();
+
+                // 得られたエラーメッセージが期待したエラーと一致するかどうかを確認
+                assertTrue(expectedErrors.containsKey(field));
+                assertEquals(expectedErrors.get(field), message);
+
+                // 確認したエラーをマップから削除
+                expectedErrors.remove(field);
+            }
+
+            // すべてのエラーが確認され、マップが空になっていることを確認
+            assertTrue(expectedErrors.isEmpty());
+        }
     }
 
 
@@ -229,6 +260,86 @@ public class MovieRestApiIntegrationTest {
         JsonNode actualJson = objectMapper.readTree(actualResult);
         String expectedResult = objectMapper.readTree(getJsonFileData("movie-update.json")).toString();
         JSONAssert.assertEquals(expectedResult, actualJson.toString(), JSONCompareMode.STRICT);
+    }
+
+
+
+    @Test
+    public void 不正な内容で映画を更新するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("name", "");
+            updates.put("director", "");
+            updates.put("year", 1700);
+            updates.put("rating", 20);
+            updates.put("runtime", 0);
+
+            String actualResult = mockMvc
+                    .perform(put("/movies/test1")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            JsonNode actualJson = objectMapper.readTree(actualResult);
+            JsonNode errorsNode = actualJson.get("errors");
+
+            // 必要なエラーメッセージとフィールドを保持するマップを作成します
+            Map<String, String> expectedErrors = new HashMap<>();
+            expectedErrors.put("director", "must not be blank");
+            expectedErrors.put("rating", "must be less than or equal to 10.0");
+            expectedErrors.put("runtime", "must be greater than or equal to 1");
+            expectedErrors.put("year", "must be greater than or equal to 1800");
+            expectedErrors.put("name", "must not be blank");
+
+            // レスポンスから得られたエラーをループ処理
+            for (JsonNode errorNode : errorsNode) {
+                String field = errorNode.get("field").asText();
+                String message = errorNode.get("defaultMessage").asText();
+
+                // 得られたエラーメッセージが期待したエラーと一致するかどうかを確認
+                assertTrue(expectedErrors.containsKey(field));
+                assertEquals(expectedErrors.get(field), message);
+
+                // 確認したエラーをマップから削除
+                expectedErrors.remove(field);
+            }
+
+            // すべてのエラーが確認され、マップが空になっていることを確認
+            assertTrue(expectedErrors.isEmpty());
+        }
+    }
+
+    @Test
+    @Transactional
+    @DataSet(value = "movieList.yml")
+    void 存在しないIDの映画を更新した際にエラーが返されること() throws Exception {
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try(MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)){
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+
+            String actualResult = mockMvc.perform(put("/movies/100")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    new Movie("test2", "ターミネーター", "ジェームズ・キャメロン", 1984, new BigDecimal(8.5), 108))))
+                    .andExpect(status().isNotFound())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            JsonNode actualJson = objectMapper.readTree(actualResult);
+            String expectedResult = objectMapper.readTree(getJsonFileData("movie-404.json")).toString();
+            JSONAssert.assertEquals(expectedResult, actualJson.toString(), JSONCompareMode.STRICT);
+
+        }
     }
 
     @Test
@@ -258,63 +369,6 @@ public class MovieRestApiIntegrationTest {
         JSONAssert.assertEquals(expectedResult, actualJson.toString(), JSONCompareMode.STRICT);
     }
 
-    @Test
-    void 不正な内容で映画を更新するとエラーが返されること() throws Exception {
-        mockMvc.perform(put("/movies/test1")
-                        // 入力を空で受け付けた場合
-                        .content("""
-                    {
-                        "name":"",
-                        "director": "Testing",
-                        "year": 20000,
-                        "rating": 15,
-                        "runtime":""
-                    }
-                 """)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void 不正な内容で映画の一部データを更新するとエラーが返されること() throws Exception {
-        mockMvc.perform(put("/movies/test1")
-                        // 入力を空で受け付けた場合
-                        .content("""
-                    {
-                        "name":"",
-                        "director": "Testing",
-                    }
-                 """)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Transactional
-    @DataSet(value = "movieList.yml")
-    void 存在しないIDの映画を更新した際にエラーが返されること() throws Exception {
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
-        try(MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)){
-            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
-
-
-            String actualResult = mockMvc.perform(put("/movies/100")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(
-                                    new Movie("test2", "ターミネーター", "ジェームズ・キャメロン", 1984, new BigDecimal(8.5), 108))))
-                    .andExpect(status().isNotFound())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString(StandardCharsets.UTF_8);
-
-            JsonNode actualJson = objectMapper.readTree(actualResult);
-            String expectedResult = objectMapper.readTree(getJsonFileData("movie-404.json")).toString();
-            JSONAssert.assertEquals(expectedResult, actualJson.toString(), JSONCompareMode.STRICT);
-
-        }
-    }
 
     @Test
     @Transactional
@@ -345,6 +399,145 @@ public class MovieRestApiIntegrationTest {
 
         }
     }
+
+    @Test
+    public void 空の名前で映画のnameデータを更新するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("name", "");
+            updates.put("director", "test");
+            updates.put("year", 2000);
+
+
+            String actualResult = mockMvc
+                    .perform(patch("/movies/test1")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            String expectedResult = objectMapper.readTree(getJsonFileData("movie-name-blank.json")).toString();
+            JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
+
+        }
+    }
+
+    @Test
+    public void 空のディレクター名で映画のdirectorデータを更新するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("name", "test");
+            updates.put("director", "");
+            updates.put("year", 2000);
+
+
+            String actualResult = mockMvc
+                    .perform(patch("/movies/test1")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            String expectedResult = objectMapper.readTree(getJsonFileData("movie-director-blank.json")).toString();
+            JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
+
+        }
+    }
+
+    @Test
+    public void 不正な年で映画のyearデータを更新するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("name", "test");
+            updates.put("director", "test");
+            updates.put("year", 20000);
+
+
+            String actualResult = mockMvc
+                    .perform(patch("/movies/test1")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            String expectedResult = objectMapper.readTree(getJsonFileData("movie-invalid-year.json")).toString();
+            JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
+
+        }
+    }
+
+    @Test
+    public void 不正なレートで映画のratingデータを更新するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("rating", 20);
+
+            String actualResult = mockMvc
+                    .perform(patch("/movies/test1")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            String expectedResult = objectMapper.readTree(getJsonFileData("movie-invalid-rating.json")).toString();
+            JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
+        }
+    }
+
+    @Test
+    public void 不正な上映時間で映画のruntimeデータを更新するとエラーが返されること() throws Exception {
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2023, 6, 28, 13, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
+        try (MockedStatic<ZonedDateTime> zonedDateTimeMockedStatic = Mockito.mockStatic(ZonedDateTime.class)) {
+            zonedDateTimeMockedStatic.when(ZonedDateTime::now).thenReturn(zonedDateTime);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("runtime", 0);
+
+            String actualResult = mockMvc
+                    .perform(patch("/movies/test1")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updates)))
+                    .andExpect(status().isBadRequest())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString(StandardCharsets.UTF_8);
+
+            String expectedResult = objectMapper.readTree(getJsonFileData("movie-invalid-runtime.json")).toString();
+            JSONAssert.assertEquals(expectedResult, actualResult, JSONCompareMode.STRICT);
+        }
+    }
+
+
 
     @Test
     @Transactional
@@ -385,6 +578,3 @@ public class MovieRestApiIntegrationTest {
         }
     }
 }
-
-
-
