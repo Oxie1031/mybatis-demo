@@ -1,6 +1,7 @@
 package com.example.mybatisdemo.controller;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.example.mybatisdemo.service.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,7 +51,7 @@ public class MovieController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable String id, @Validated @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<ApiResponse<MovieResponse>> patchMovie(@PathVariable String id, @Validated @RequestBody PatchMovieForm updates) {
         ApiResponse<MovieResponse> response = new ApiResponse<>("success", "Movie successfully updated.", new MovieResponse(movieService.patchMovie(id, updates)));
 
         return ResponseEntity.ok(response);

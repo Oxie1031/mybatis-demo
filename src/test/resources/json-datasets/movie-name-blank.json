@@ -1,0 +1,12 @@
+{
+  "path": "/movies/test1",
+  "error": "Bad Request",
+  "errors": [
+    {
+      "field": "name",
+      "defaultMessage": "must not be blank"
+    }
+  ],
+  "timestamp": "2023-06-28T13:00+09:00[Asia/Tokyo]",
+  "status": 400
+}

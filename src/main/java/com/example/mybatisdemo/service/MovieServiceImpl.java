@@ -1,13 +1,12 @@
 package com.example.mybatisdemo.service;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
 import com.example.mybatisdemo.mapper.MovieMapper;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,14 +34,12 @@ public class MovieServiceImpl implements MovieService {
     }
 
 
-
     @Override
     public List<Movie> getMoviesByPublishedYear(int year) {
         List<Movie> movies = movieMapper.findByPublishedYear(year);
 
         return movies.stream().collect(Collectors.toList());
     }
-
 
 
     @Override
@@ -57,11 +54,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
 
-
     @Override
     public Movie updateMovie(String id, Movie movie) {
-        Movie existingMovie = movieMapper.findOptionalById(id)
-                .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
         movieMapper.update(id, movie);
         Movie updatedMovie = movieMapper.findOptionalById(id).orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
@@ -80,31 +74,21 @@ public class MovieServiceImpl implements MovieService {
         return movieToDelete;
     }
 
-
-    //後日更新処理をMovieに移し、引数として利用するPatchMovieInputクラスを作成
     @Override
-    public Movie patchMovie(String  id, Map<String, Object> updates) {
+    public Movie patchMovie(String id, PatchMovieForm updates) {
         Movie movieToUpdate = movieMapper.findOptionalById(id)
                 .orElseThrow(() -> new MovieNotFoundException("Movie with id " + id + " not found."));
 
-        if(updates.containsKey("name")){
-            movieToUpdate.setName((String) updates.get("name"));
-        }
-        if(updates.containsKey("director")){
-            movieToUpdate.setDirector((String) updates.get("director"));
-        }
-        if(updates.containsKey("year")){
-            movieToUpdate.setYear((int) updates.get("year"));
-        }
-        if(updates.containsKey("rating")){
-            movieToUpdate.setRating((BigDecimal) updates.get("rating"));
-        }
-        if(updates.containsKey("runtime")){
-            movieToUpdate.setRuntime((int) updates.get("runtime"));
-        }
+        updates.getName().ifPresent(movieToUpdate::setName);
+        updates.getDirector().ifPresent(movieToUpdate::setDirector);
+        updates.getYear().ifPresent(movieToUpdate::setYear);
+        updates.getRating().ifPresent(movieToUpdate::setRating);
+        updates.getRuntime().ifPresent(movieToUpdate::setRuntime);
 
         movieMapper.update(id, movieToUpdate);
-        return  movieToUpdate;
+        return movieToUpdate;
     }
 
+
 }
+

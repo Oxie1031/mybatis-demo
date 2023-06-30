@@ -1,6 +1,7 @@
 package com.example.mybatisdemo.service;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
 import com.example.mybatisdemo.mapper.MovieMapper;
 import org.junit.jupiter.api.Test;
@@ -160,12 +161,13 @@ class MovieServiceImplTest {
         Movie expectedMovie = new Movie("id1","UpdatedMovie", "UpdatedDirector", 2, new BigDecimal(2), 2);
         doReturn(Optional.of(movie)).when(movieMapper).findOptionalById("id1");
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name", "UpdatedMovie");
-        updates.put("director", "UpdatedDirector");
-        updates.put("year", 2);
-        updates.put("rating", new BigDecimal(2));
-        updates.put("runtime", 2);
+        PatchMovieForm updates = new PatchMovieForm();
+
+        updates.setName("UpdatedMovie");
+        updates.setDirector("UpdatedDirector");
+        updates.setYear(2);
+        updates.setRating( new BigDecimal(2));
+        updates.setRuntime(2);
 
 
         Movie actualMovie = movieService.patchMovie("id1", updates);
