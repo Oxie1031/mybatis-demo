@@ -78,6 +78,7 @@ class MovieMapperTest {
     }
 
     @Test
+    @Transactional
     @DataSet(value = "datasets/movieList.yml")
     @ExpectedDataSet(value = "datasets/movieInsert.yml")
     public void 新しい映画が追加できること() {

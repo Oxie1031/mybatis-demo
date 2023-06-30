@@ -148,15 +148,10 @@ public class MovieRestApiIntegrationTest {
     @Test
     @Transactional
     @DataSet(value = "datasets/movieList.yml")
-    @ExpectedDataSet(value = "datasets/movieInsert.yml",  ignoreCols = "id")
+    @ExpectedDataSet(value = "datasets/moviePost.yml",  ignoreCols = "id")
     void 映画を登録できること() throws Exception {
 
-        Map<String, Object> insertData = new HashMap<>();
-        insertData.put("name", "新作映画");
-        insertData.put("director", "新作・映画");
-        insertData.put("year", 2024);
-        insertData.put("rating", 9.5);
-        insertData.put("runtime", 120);
+        Movie insertData = new Movie("test4", "新作映画", "新作・映画", 2024, new BigDecimal(9.5), 120);
 
 
         String actualResult = mockMvc

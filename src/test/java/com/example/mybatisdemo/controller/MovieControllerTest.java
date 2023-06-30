@@ -3,7 +3,6 @@ package com.example.mybatisdemo.controller;
 import com.example.mybatisdemo.entity.Movie;
 import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
-import com.example.mybatisdemo.exception.MovieValidationException;
 import com.example.mybatisdemo.service.MovieService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,8 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -218,7 +218,6 @@ class MovieControllerTest {
         updates.setDirector("");
         updates.setYear(19999);
 
-        doThrow(MovieValidationException.class).when(movieService).patchMovie("test1", updates);
 
         mockMvc.perform(patch("/movies/test1")
                         .accept(MediaType.APPLICATION_JSON)

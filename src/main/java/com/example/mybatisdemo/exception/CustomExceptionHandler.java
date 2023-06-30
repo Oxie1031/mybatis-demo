@@ -51,17 +51,5 @@ public class CustomExceptionHandler {
         return body;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MovieValidationException.class)
-    public Map<String, Object> handleMovieValidationException(MovieValidationException ex, HttpServletRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", ZonedDateTime.now().toString());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        body.put("message", ex.getMessage());
-        body.put("path", request.getRequestURI());
-
-        return body;
-    }
 }
 
