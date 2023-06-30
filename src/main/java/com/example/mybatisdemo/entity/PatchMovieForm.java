@@ -86,3 +86,4 @@ public class PatchMovieForm {
         return Objects.hash(name, director, year, rating, runtime);
     }
 }
+
