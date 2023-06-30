@@ -1,10 +1,4 @@
 movies:
-  - id: "test4"
-    name: "新作映画"
-    director: "新作・映画"
-    year: 2024
-    rating: 9.5
-    runtime: 120
   - id: "test1"
     name: "ハリポタ"
     director: "ハリポタ・ポッタポッター"
@@ -23,4 +17,9 @@ movies:
     year: 2001
     rating: 9.5
     runtime: 119
-
+  - id: "test4"
+    name: "新作映画"
+    director: "新作・映画"
+    year: 2024
+    rating: 9.5
+    runtime: 120
