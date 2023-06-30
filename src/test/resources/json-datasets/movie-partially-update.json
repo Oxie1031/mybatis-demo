@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "message": "Movie successfully updated.",
+  "data": {
+    "id": "test2",
+    "name": "ターミネーター",
+    "director": "ジェームズ・キャメロン",
+    "year": 2000
+  }
+}

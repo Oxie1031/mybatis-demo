@@ -1,8 +1,8 @@
 package com.example.mybatisdemo.controller;
 
 import com.example.mybatisdemo.entity.Movie;
+import com.example.mybatisdemo.entity.PatchMovieForm;
 import com.example.mybatisdemo.exception.MovieNotFoundException;
-import com.example.mybatisdemo.exception.MovieValidationException;
 import com.example.mybatisdemo.service.MovieService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,18 +19,11 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -168,10 +161,10 @@ class MovieControllerTest {
 
         Movie updatedMovie = new Movie("test1", "セブルス", "セブルス・スネイプ", 1999, new BigDecimal(8.5), 117);
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name", "セブルス");
-        updates.put("director", "セブルス・スネイプ");
-        updates.put("year", 1999);
+        PatchMovieForm updates = new PatchMovieForm();
+        updates.setName("セブルス");
+        updates.setDirector("セブルス・スネイプ");
+        updates.setYear(1999);
 
         doReturn(updatedMovie).when(movieService).patchMovie("test1", updates);
 
@@ -220,12 +213,11 @@ class MovieControllerTest {
     @Test
     public void 不正な映画データのリクエストを送信した際にエラーを返すこと() throws Exception {
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name", "");
-        updates.put("director", "");
-        updates.put("year", 19999);
+        PatchMovieForm updates = new PatchMovieForm();
+        updates.setName("");
+        updates.setDirector("");
+        updates.setYear(19999);
 
-        doThrow(MovieValidationException.class).when(movieService).patchMovie("test1", updates);
 
         mockMvc.perform(patch("/movies/test1")
                         .accept(MediaType.APPLICATION_JSON)
